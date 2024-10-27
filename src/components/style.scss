@@ -1,0 +1,72 @@
+.game-field {
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+	flex-wrap: wrap;
+
+	width: min(80vh, 80vw);
+	height: min(80vh, 80vw);
+	aspect-ratio: 1/1;
+
+	> div.outer {
+		display: flex;
+		align-items: center;
+		justify-content: space-around;
+		flex-wrap: wrap;
+
+		width: 30%;
+		aspect-ratio: 1/1;
+
+		> div.inner {
+			display: flex;
+			align-items: center;
+			justify-content: space-around;
+
+			width: 30%;
+			aspect-ratio: 1/1;
+
+			cursor: pointer;
+
+			border: 1px solid orange;
+		}
+	}
+}
+
+.active {
+	background-color: rgb(139, 91, 2);
+}
+
+.cross {
+	width: 70%;
+	aspect-ratio: 1/1;
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+	position: relative;
+
+	&::after,
+	&::before {
+		content: '';
+		width: 130%;
+		height: 3px;
+		background-color: white;
+		display: block;
+		position: absolute;
+		border-radius: 3px;
+	}
+
+	&::before {
+		transform: rotate(-45deg);
+	}
+
+	&::after {
+		transform: rotate(45deg);
+	}
+}
+
+.circle {
+	width: 70%;
+	aspect-ratio: 1/1;
+	border: 3px solid white;
+	border-radius: 50%;
+}
