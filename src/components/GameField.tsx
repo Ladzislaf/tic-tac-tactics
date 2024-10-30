@@ -5,51 +5,75 @@ import clsx from 'clsx';
 const initialBoard = [
 	[null, null, null, null, null, null, null, null, null],
 	[null, null, null, null, null, null, null, null, null],
-	[false],
 	[null, null, null, null, null, null, null, null, null],
 	[null, null, null, null, null, null, null, null, null],
 	[null, null, null, null, null, null, null, null, null],
 	[null, null, null, null, null, null, null, null, null],
-	[true],
+	[null, null, null, null, null, null, null, null, null],
+	[null, null, null, null, null, null, null, null, null],
 	[null, null, null, null, null, null, null, null, null],
 ];
+
+// true - cross wins, false - circle wins, null - no winner
+const calculateWinner = (board: Array<boolean | null>): boolean | null => {
+	const winningLines = [
+		[0, 1, 2],
+		[3, 4, 5],
+		[6, 7, 8],
+		[0, 3, 6],
+		[1, 4, 7],
+		[2, 5, 8],
+		[0, 4, 8],
+		[2, 4, 6],
+	];
+
+	for (const line of winningLines) {
+		if (board[line[0]] !== null && board[line[0]] === board[line[1]] && board[line[1]] === board[line[2]]) {
+			return board[line[0]];
+		}
+	}
+
+	return null;
+};
 
 function GameField() {
 	const [isCrossMove, setIsCrossMove] = useState<boolean>(true);
 	const [activeOuterCell, setActiveOuterCell] = useState<number | null>(null);
 	const [board, setBoard] = useState<Array<Array<boolean | null>>>(initialBoard);
+	const [gameState, setGameState] = useState<string>(`${isCrossMove ? 'Crosses' : 'Circles'} move`);
 
 	const handleClick = (outer: number, inner: number) => {
 		if ((activeOuterCell === outer || activeOuterCell === null) && board[outer][inner] === null) {
 			setBoard((board) => {
 				const newBoard = [...board];
 				newBoard[outer][inner] = isCrossMove;
+
+				const innerWinner = calculateWinner(newBoard[outer]);
+				if (innerWinner !== null) {
+					newBoard[outer] = [innerWinner];
+				}
+
+				const outerWinner = calculateWinner(
+					newBoard.map((innerBoard) => (innerBoard.length > 1 ? null : innerBoard[0]))
+				);
+				if (outerWinner !== null) {
+					setGameState(`${outerWinner ? 'Crosses' : 'Circles'} win!`);
+				} else {
+					setGameState(`${!isCrossMove ? 'Crosses' : 'Circles'} move`);
+				}
+
+				newBoard[inner].length < 9 ? setActiveOuterCell(null) : setActiveOuterCell(inner);
+
 				return newBoard;
 			});
 
-			board[inner].length < 9 ? setActiveOuterCell(null) : setActiveOuterCell(inner);
 			setIsCrossMove(!isCrossMove);
-			
-			// todo calculate if outer cell is won
 		}
 	};
 
-	/* 	const calculateWinner = () => {
-		const lines = [
-			[0, 1, 2],
-			[3, 4, 5],
-			[6, 7, 8],
-			[0, 3, 6],
-			[1, 4, 7],
-			[2, 5, 8],
-			[0, 4, 8],
-			[2, 4, 6],
-		];
-	}; */
-
 	return (
 		<>
-			<h1>{isCrossMove ? 'Cross' : 'Circle'} moves</h1>
+			<h1>{gameState}</h1>
 
 			<div className='game-field'>
 				{board.map((outerCell, i) => {
@@ -60,7 +84,8 @@ function GameField() {
 					) : (
 						<div className='outer' key={i}>
 							{outerCell.map((innerCell, j) => {
-								const isActive = (activeOuterCell === i || activeOuterCell === null) && innerCell === null;
+								const isActive =
+									(activeOuterCell === i || activeOuterCell === null) && innerCell === null && /move/.test(gameState);
 
 								return (
 									<div
