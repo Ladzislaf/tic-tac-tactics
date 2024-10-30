@@ -43,6 +43,8 @@ function GameField() {
 	const [gameState, setGameState] = useState<string>(`${isCrossMove ? 'Crosses' : 'Circles'} move`);
 
 	const handleClick = (outer: number, inner: number) => {
+		if (/win/.test(gameState)) return;
+
 		if ((activeOuterCell === outer || activeOuterCell === null) && board[outer][inner] === null) {
 			setBoard((board) => {
 				const newBoard = [...board];
