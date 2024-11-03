@@ -61,7 +61,8 @@ function GameField() {
 				if (outerWinner !== null) {
 					setGameState(`${outerWinner ? 'Crosses' : 'Circles'} win!`);
 				} else {
-					setGameState(`${!isCrossMove ? 'Crosses' : 'Circles'} move`);
+					const isDraw = newBoard.filter((innerBoard) => innerBoard.length > 1).length <= 0;
+					setGameState(isDraw ? "It's a draw!" : `${!isCrossMove ? 'Crosses' : 'Circles'} move`);
 				}
 
 				newBoard[inner].length < 9 ? setActiveOuterCell(null) : setActiveOuterCell(inner);
